@@ -15,8 +15,9 @@ except Exception:
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
-ALLOWED_HOSTS = os.environ.get("marketplace-s8vg.onrender.com", "127.0.0.1,localhost").split(",")
-
+ALLOWED_HOSTS = [
+    "marketplace-s8vg.onrender.com",
+]
 CSRF_TRUSTED_ORIGINS = []
 _csrf = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "")
 if _csrf.strip():
