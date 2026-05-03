@@ -1,0 +1,126 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Produits | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="products-page">
+
+  <header class="products-hero card glow reveal">
+    <div class="products-hero-top">
+      <div>
+        <h1 class="products-title">Catalogue produits</h1>
+        <p class="products-subtitle muted">
+          Choisissez un produit selon votre budget. Aucun gain n’est garanti.
+        </p>
+      </div>
+
+      <div class="products-hero-right">
+        <div class="products-count">
+          <span class="muted">Disponibles</span>
+          <span class="count-pill" id="productsCount">
+            {% if products %}{{ products|length }}{% else %}0{% endif %}
+          </span>
+        </div>
+
+        <a class="btn btn-outline" href="{% url 'home' %}">
+          <i class="bi bi-arrow-left"></i> Accueil
+        </a>
+      </div>
+    </div>
+
+    <div class="products-toolbar">
+      <div class="searchbox">
+        <i class="bi bi-search"></i>
+        <input id="productSearch" type="text" placeholder="Rechercher un produit..." autocomplete="off">
+      </div>
+
+      <div class="toolbar-hint muted">
+        <i class="bi bi-info-circle"></i> Recherche par nom / description
+      </div>
+    </div>
+  </header>
+
+  {% if products %}
+    <div class="grid products-grid" id="productsGrid">
+      {% for p in products %}
+        <article class="product-card pro reveal product-item"
+                 data-filter="{{ p.name|lower }} {{ p.description|default:''|lower }} {{ p.get_note_display|lower }}">
+
+          <a class="product-card-link" href="{% url 'product_detail' p.pk %}">
+            {% if p.image_url %}
+              <img class="product-cover" src="{{ p.image_url }}" alt="{{ p.name }}">
+            {% elif p.image %}
+              <img class="product-cover" src="{{ p.image.url }}" alt="{{ p.name }}">
+            {% else %}
+              <div class="product-cover product-cover--placeholder">
+                <div class="product-cover-initial">{{ p.name|slice:":1"|upper }}</div>
+              </div>
+            {% endif %}
+
+            <div class="product-head">
+              <div class="product-name">{{ p.name }}</div>
+
+              {% if p.note == "TRUSTED" %}
+                <span class="chip chip-trusted"><i class="bi bi-patch-check"></i> Fiable</span>
+              {% elif p.note == "MAYBE" %}
+                <span class="chip chip-maybe"><i class="bi bi-exclamation-circle"></i> Pas vraiment</span>
+              {% else %}
+                <span class="chip chip-popular"><i class="bi bi-fire"></i> Populaire</span>
+              {% endif %}
+            </div>
+
+            <div class="product-desc">
+              {{ p.description|truncatechars:120 }}
+            </div>
+
+            <div class="product-meta pro">
+              <div class="meta-box">
+                <div class="meta-label"><i class="bi bi-cash-coin"></i> Minimum</div>
+                <div class="meta-value">{{ p.min_investment_cdf|floatformat:0 }} FC</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label"><i class="bi bi-hourglass-split"></i> Durée</div>
+                <div class="meta-value">{{ p.duration_days }} j</div>
+              </div>
+
+              <div class="meta-box">
+                <div class="meta-label"><i class="bi bi-graph-up"></i> Indice</div>
+                <div class="meta-value">{{ p.performance_factor }}</div>
+              </div>
+            </div>
+
+            <div class="product-note">
+              <strong>Gain estimé (non garanti) :</strong>
+              {% if p.estimated_gain_cdf %}
+                {{ p.estimated_gain_cdf|floatformat:0 }} FC
+              {% else %}
+                —
+              {% endif %}
+            </div>
+          </a>
+
+          <footer class="product-actions">
+            <a class="btn btn-invest" href="{% url 'product_detail' p.pk %}">
+              <i class="bi bi-lightning-charge"></i> Investir
+            </a>
+          </footer>
+
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="card reveal muted" id="noResults" style="display:none;margin-top:12px">
+      Aucun produit ne correspond à votre recherche.
+    </div>
+  {% else %}
+    <div class="card reveal muted">
+      Aucun produit disponible pour le moment.
+    </div>
+  {% endif %}
+</section>
+
+<script src="{% static 'js/products_list.js' %}"></script>
+{% endblock %}

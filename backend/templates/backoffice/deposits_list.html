@@ -1,0 +1,37 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Dépôts | Gestion{% endblock %}
+
+{% block content %}
+<h1 style="margin:0 0 10px">Dépôts</h1>
+
+<div class="card">
+  {% if deposits %}
+    <div class="list">
+      {% for d in deposits %}
+        <div class="list-item">
+          <div class="li-top">
+            <div class="li-title">{{ d.user.username }} — {{ d.amount|floatformat:0 }} FC</div>
+            <div class="li-badge pill-{{ d.status|lower }}">{{ d.get_status_display }}</div>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:6px">Date: {{ d.created_at }}</div>
+
+          {% if d.status == "PENDING" %}
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <form method="post" action="{% url 'bo_deposit_approve' d.pk %}">
+                {% csrf_token %}
+                <button class="btn" type="submit"><i class="bi bi-check2-circle"></i> Approuver</button>
+              </form>
+              <form method="post" action="{% url 'bo_deposit_reject' d.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-outline" type="submit"><i class="bi bi-x-circle"></i> Rejeter</button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Aucun dépôt.</p>
+  {% endif %}
+</div>
+{% endblock %}

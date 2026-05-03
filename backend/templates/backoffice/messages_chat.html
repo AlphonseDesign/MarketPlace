@@ -1,0 +1,41 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Chat | Gestion{% endblock %}
+
+{% block content %}
+<h1 style="margin:0 0 10px">Chat — {{ conv.user.username }}</h1>
+
+<div class="muted" style="font-size:12px;margin-bottom:10px">
+  Admin choisi par le client : <b>{{ conv.admin.username }}</b>
+</div>
+
+<div class="chat-body card" id="chatBody">
+  {% for m in chat_messages %}
+    {% if m.sender_id == request.user.id %}
+      <div class="bubble bubble-me">
+        <div class="bubble-text">{{ m.body }}</div>
+        <div class="bubble-time">{{ m.created_at }}</div>
+      </div>
+    {% else %}
+      <div class="bubble bubble-admin">
+        <div class="bubble-text">{{ m.body }}</div>
+        <div class="bubble-time">{{ m.created_at }}</div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<div class="card" style="margin-top:10px">
+  <form class="form" method="post" action="{% url 'bo_messages_send' conv.id %}">
+    {% csrf_token %}
+    <label>Répondre</label>
+    <input name="body" type="text" maxlength="2000" placeholder="Votre message..." required>
+    <button class="btn" type="submit"><i class="bi bi-send"></i> Envoyer</button>
+    <a class="btn btn-outline" href="{% url 'bo_messages_list' %}">Retour</a>
+  </form>
+</div>
+
+<script>
+  const el = document.getElementById("chatBody");
+  if (el) el.scrollTop = el.scrollHeight;
+</script>
+{% endblock %}

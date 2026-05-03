@@ -1,0 +1,44 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Utilisateurs | Gestion{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:end">
+  <div>
+    <h1 style="margin:0">Utilisateurs</h1>
+    <p class="muted" style="margin:8px 0 0">Gestion des comptes (création admin réservée au super administrateur).</p>
+  </div>
+  {% if request.user.is_superuser %}
+    <a class="btn" href="{% url 'bo_user_create' %}"><i class="bi bi-person-plus"></i> Nouvel utilisateur</a>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top:12px">
+  {% if users %}
+    <div class="list">
+      {% for u in users %}
+        <div class="list-item">
+          <div class="li-top">
+            <div class="li-title">{{ u.username }}</div>
+            <div class="li-badge">
+              {% if u.is_staff %}Administrateur{% else %}Client{% endif %}
+            </div>
+          </div>
+
+          <div class="muted" style="font-size:12px;margin-top:6px">
+            Inscrit le: {{ u.date_joined }} — Actif: {% if u.is_active %}Oui{% else %}Non{% endif %}
+          </div>
+
+          {% if request.user.is_superuser %}
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <a class="btn btn-outline" href="{% url 'bo_user_edit' u.id %}"><i class="bi bi-pencil"></i> Modifier</a>
+              <a class="btn btn-outline" href="{% url 'bo_user_set_password' u.id %}"><i class="bi bi-key"></i> Mot de passe</a>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Aucun utilisateur.</p>
+  {% endif %}
+</div>
+{% endblock %}

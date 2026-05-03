@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Dépôt | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="card glow reveal">
+    <h1 style="margin:0">Faire un dépôt</h1>
+    <p class="muted" style="margin:8px 0 0">
+      Montant min: <b>{{ min_deposit|floatformat:0 }} FC</b> —
+      max: <b>{{ max_deposit|floatformat:0 }} FC</b>.
+    </p>
+
+    <div class="note" style="margin-top:12px">
+      <div class="muted" style="font-size:12px">Votre solde actuel</div>
+      <div style="font-weight:1200;font-size:22px;margin-top:6px">{{ wallet.balance|floatformat:0 }} FC</div>
+    </div>
+
+    <form class="form" method="post" data-loading-form>
+      {% csrf_token %}
+
+      <label>Numéro (Mobile Money)</label>
+      <input
+        name="payer_phone"
+        type="text"
+        inputmode="tel"
+        placeholder="Ex: 0992347384 ou +243..."
+        required
+      />
+
+      <label>Montant (FC)</label>
+      <input
+        name="amount"
+        type="number"
+        inputmode="numeric"
+        step="1"
+        min="{{ min_deposit }}"
+        max="{{ max_deposit }}"
+        placeholder="Ex: 5000"
+        required
+      />
+
+      <label>Mode de paiement</label>
+      <select name="method" required>
+        <option value="">-- Choisir --</option>
+        <option value="AIRTEL_MONEY">Airtel Money</option>
+        <option value="ORANGE_MONEY">Orange Money</option>
+      </select>
+
+      <button class="btn" type="submit">
+        <span class="btn-label"><i class="bi bi-send"></i> Envoyer</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+
+      <a class="btn btn-outline" href="{% url 'user_dashboard' %}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+
+      <p class="muted" style="font-size:12px;margin-top:6px">
+        Après envoi, vous aurez une page avec les instructions (numéro et nom).
+      </p>
+    </form>
+  </div>
+</section>
+{% endblock %}

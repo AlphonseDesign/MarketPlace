@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Créer un compte | InvestMarket{% endblock %}
+
+{% block content %}
+<div class="card auth">
+  <h1>Créer un compte</h1>
+  <form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Créer</button>
+  </form>
+  <p class="muted">Déjà inscrit ? <a class="link" href="{% url 'login' %}">Connexion</a></p>
+</div>
+{% endblock %}

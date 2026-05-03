@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="card glow reveal">
+
+    {% if product.image_url %}
+      <img class="product-cover product-cover--detail" src="{{ product.image_url }}" alt="{{ product.name }}">
+    {% elif product.image %}
+      <img class="product-cover product-cover--detail" src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% else %}
+      <div class="product-cover product-cover--detail product-cover--placeholder">
+        <div class="product-cover-initial">{{ product.name|slice:":1" }}</div>
+      </div>
+    {% endif %}
+
+    <div class="product-top">
+      <div>
+        <h1 style="margin:0">{{ product.name }}</h1>
+        <p class="muted" style="margin:8px 0 0">meilleur investissement pour gagner de l'argent.</p>
+      </div>
+
+      {% if product.note == "TRUSTED" %}
+        <span class="chip chip-trusted"><i class="bi bi-patch-check"></i> Fiable</span>
+      {% elif product.note == "MAYBE" %}
+        <span class="chip chip-maybe"><i class="bi bi-exclamation-circle"></i> Pas vraiment</span>
+      {% else %}
+        <span class="chip chip-popular"><i class="bi bi-fire"></i> Populaire</span>
+      {% endif %}
+    </div>
+
+    <div class="grid-3" style="margin-top:14px">
+      <div class="mini">
+        <div class="meta-label"><i class="bi bi-cash-coin"></i> Minimum</div>
+        <div class="meta-value">{{ product.min_investment_cdf|floatformat:0 }} FC</div>
+      </div>
+      <div class="mini">
+        <div class="meta-label"><i class="bi bi-hourglass-split"></i> Durée</div>
+        <div class="meta-value">{{ product.duration_days }} jours</div>
+      </div>
+      <div class="mini">
+        <div class="meta-label"><i class="bi bi-graph-up"></i> Gain estimé</div>
+        <div class="meta-value">
+          {% if product.estimated_gain_cdf %}
+            {{ product.estimated_gain_cdf|floatformat:0 }} FC
+          {% else %}
+            —
+          {% endif %}
+        </div>
+        <div class="muted" style="font-size:12px;margin-top:4px">(fiable)</div>
+      </div>
+    </div>
+
+    <hr class="sep"/>
+
+    <h3>Description</h3>
+    <p style="white-space:pre-wrap">{{ product.description }}</p>
+
+    <div class="note">
+      <strong>Indice performance (variable) :</strong> {{ product.performance_factor }}
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="card" style="margin-top:12px">
+        <div class="muted" style="font-size:12px">Votre solde</div>
+        <div style="font-weight:1200;font-size:22px;margin-top:6px">
+          {{ wallet.balance|floatformat:0 }} FC
+        </div>
+
+        <form class="form" method="post" action="{% url 'invest_in_product' product.id %}">
+          {% csrf_token %}
+          <label>Montant à investir (FC)</label>
+          <input name="amount" type="number" step="1" min="0" placeholder="Ex: 50000" required>
+          <button class="btn" type="submit"><i class="bi bi-lightning-charge"></i> Investir</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

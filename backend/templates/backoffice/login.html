@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f97316">
+  <title>Connexion gestion | InvestMarket</title>
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/backoffice.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- ✅ Favicon -->
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}?v=1">
+  <link rel="apple-touch-icon" href="{% static 'img/favicon.png' %}?v=1">
+</head>
+<body>
+  <div class="container" style="max-width:520px;margin-top:40px">
+    <div class="card glow">
+      <h1 style="margin:0">Connexion Gestion</h1>
+      <p class="muted" style="margin-top:8px">Réservé aux administrateurs.</p>
+
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="msg msg-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn" type="submit"><i class="bi bi-shield-lock"></i> Se connecter</button>
+        <a class="btn btn-outline" href="{% url 'home' %}"><i class="bi bi-globe"></i> Retour site</a>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

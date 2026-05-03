@@ -1,0 +1,89 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Messages | Gestion{% endblock %}
+
+{% block content %}
+<div class="card glow" style="margin-bottom:12px">
+  <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:end">
+    <div>
+      <h1 style="margin:0"><i class="bi bi-chat-dots"></i> Messages</h1>
+      <p class="muted" style="margin:8px 0 0">Badge vert = messages client non lus.</p>
+    </div>
+
+    <div style="min-width:260px;flex:1;max-width:420px">
+      <label class="muted" style="font-size:12px;font-weight:950">Rechercher</label>
+      <input id="msgSearch" type="text" placeholder="Nom client / dernier message..." autocomplete="off">
+      <div class="muted" style="font-size:12px;margin-top:6px">
+        Résultats : <b id="msgCount">0</b>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  {% if conversations %}
+    <div class="chat-threads" id="threads">
+      {% for c in conversations %}
+        <a class="chat-thread"
+           href="{% url 'bo_messages_chat' c.id %}"
+           data-filter="{{ c.user.username|lower }} {{ c.admin.username|lower }} {{ c.last_message_preview|default:''|lower }}">
+
+          <div class="chat-avatar-wrap">
+            <div class="chat-avatar">{{ c.user.username|slice:":1"|upper }}</div>
+            {% if c.unread_count %}
+              <div class="unread-badge">{{ c.unread_count }}</div>
+            {% endif %}
+          </div>
+
+          <div class="chat-thread-meta">
+            <div class="chat-thread-title" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <span style="font-weight:1100"><i class="bi bi-person"></i> {{ c.user.username }}</span>
+              <span class="muted" style="font-size:12px">
+                <i class="bi bi-shield-lock"></i> Admin choisi : {{ c.admin.username }}
+              </span>
+            </div>
+
+            <div class="chat-thread-preview muted">
+              <i class="bi bi-chat-left-text"></i>
+              {{ c.last_message_preview|default:"Démarrer la conversation..." }}
+            </div>
+          </div>
+
+          <div class="chat-thread-time muted" style="font-size:12px;text-align:right">
+            <div><i class="bi bi-clock"></i> {% if c.last_message_at %}{{ c.last_message_at }}{% else %}—{% endif %}</div>
+            <div style="margin-top:8px">
+              <span class="li-badge" style="display:inline-flex;align-items:center;gap:6px">
+                <i class="bi bi-reply"></i> Ouvrir
+              </span>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Aucune conversation.</p>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  const search = document.getElementById("msgSearch");
+  const threads = document.getElementById("threads");
+  const count = document.getElementById("msgCount");
+  if(!threads || !count) return;
+
+  const items = Array.from(threads.querySelectorAll(".chat-thread"));
+  const updateCount = () => { count.textContent = items.filter(x => x.style.display !== "none").length; };
+  updateCount();
+
+  if(!search) return;
+  search.addEventListener("input", () => {
+    const q = (search.value || "").trim().toLowerCase();
+    items.forEach((a) => {
+      const text = (a.getAttribute("data-filter") || "");
+      a.style.display = text.includes(q) ? "" : "none";
+    });
+    updateCount();
+  });
+})();
+</script>
+{% endblock %}

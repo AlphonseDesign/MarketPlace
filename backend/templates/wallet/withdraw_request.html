@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Retrait | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="card glow reveal">
+    <h1 style="margin:0">Retirer de l'argent</h1>
+
+    <p class="muted" style="margin:8px 0 0">
+      Montant min: <b>{{ min_withdraw|floatformat:0 }} FC</b> —
+      max: <b>{{ max_withdraw|floatformat:0 }} FC</b>.
+    </p>
+
+    <div class="note" style="margin-top:12px">
+      <div class="muted" style="font-size:12px">Solde actuel</div>
+      <div style="font-weight:1200;font-size:22px;margin-top:6px">{{ wallet.balance|floatformat:0 }} FC</div>
+    </div>
+
+    <form method="post" class="form" data-loading-form>
+      {% csrf_token %}
+
+      <label>Montant à retirer (FC)</label>
+      <input
+        name="amount"
+        type="number"
+        step="1"
+        inputmode="numeric"
+        min="{{ min_withdraw }}"
+        max="{{ max_withdraw }}"
+        placeholder="Ex: 12000"
+        required
+      />
+
+      <label>Mode de retrait</label>
+      <select name="method" required>
+        <option value="">-- Choisir --</option>
+        <option value="AIRTEL_MONEY">Airtel Money</option>
+        <option value="ORANGE_MONEY">Orange Money</option>
+      </select>
+
+      <label>Votre numéro</label>
+      <input
+        name="phone"
+        type="text"
+        inputmode="tel"
+        placeholder="Airtel: +2439... / Orange: +2438..."
+        required
+      />
+
+      <button class="btn" type="submit">
+        <span class="btn-label"><i class="bi bi-arrow-down-circle"></i> Retirer</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+
+      <a class="btn btn-outline" href="{% url 'user_dashboard' %}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+
+      <p class="muted" style="font-size:12px;margin-top:6px">
+        Après envoi, votre demande est enregistrée et sera traitée sous 24h.
+      </p>
+    </form>
+  </div>
+</section>
+{% endblock %}

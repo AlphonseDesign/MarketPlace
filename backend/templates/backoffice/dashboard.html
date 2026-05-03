@@ -1,0 +1,43 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Tableau de bord | Gestion{% endblock %}
+
+{% block content %}
+<h1 style="margin:0 0 10px">Tableau de bord</h1>
+
+<div class="grid-3">
+  <div class="card stat">
+    <div class="stat-label"><i class="bi bi-people"></i> Utilisateurs</div>
+    <div class="stat-value">{{ total_users }}</div>
+    <div class="stat-sub">Total inscrits</div>
+  </div>
+
+  <div class="card stat">
+    <div class="stat-label"><i class="bi bi-wallet2"></i> Solde total wallets</div>
+    <div class="stat-value">{{ total_wallet_balance|floatformat:0 }} FC</div>
+    <div class="stat-sub">Somme des balances</div>
+  </div>
+
+  <div class="card stat">
+    <div class="stat-label"><i class="bi bi-hourglass-split"></i> En attente</div>
+    <div class="stat-value">{{ pending_deposits }} / {{ pending_withdrawals }}</div>
+    <div class="stat-sub">Dépôts / Retraits</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3 style="margin:0">Produits</h3>
+    <p class="muted" style="margin-top:8px">Total: <b>{{ total_products }}</b> — Actifs: <b>{{ active_products }}</b></p>
+    <a class="btn" href="{% url 'bo_product_create' %}"><i class="bi bi-plus-circle"></i> Nouveau produit</a>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0">Investissements</h3>
+    <p class="muted" style="margin-top:8px">
+      Total investi: <b>{{ inv_total|floatformat:0 }} FC</b><br>
+      Actifs: <b>{{ inv_active }}</b> — Clôturés: <b>{{ inv_closed }}</b>
+    </p>
+    <a class="btn btn-outline" href="{% url 'bo_investments_list' %}"><i class="bi bi-graph-up"></i> Voir</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Retraits | Gestion{% endblock %}
+
+{% block content %}
+<h1 style="margin:0 0 10px">Retraits</h1>
+
+<div class="card">
+  {% if withdrawals %}
+    <div class="list">
+      {% for w in withdrawals %}
+        <div class="list-item">
+          <div class="li-top">
+            <div class="li-title">{{ w.user.username }} — {{ w.amount|floatformat:0 }} FC</div>
+            <div class="li-badge pill-{{ w.status|lower }}">{{ w.get_status_display }}</div>
+          </div>
+
+          <div class="muted" style="font-size:12px;margin-top:6px">
+            Date: {{ w.created_at }} {% if w.payout_account %}— Compte: {{ w.payout_account }}{% endif %}
+          </div>
+
+          {% if w.status == "PENDING" %}
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <form method="post" action="{% url 'bo_withdraw_approve' w.pk %}">
+                {% csrf_token %}
+                <button class="btn" type="submit"><i class="bi bi-check2-circle"></i> Approuver</button>
+              </form>
+              <form method="post" action="{% url 'bo_withdraw_reject' w.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-outline" type="submit"><i class="bi bi-x-circle"></i> Rejeter</button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Aucun retrait.</p>
+  {% endif %}
+</div>
+{% endblock %}

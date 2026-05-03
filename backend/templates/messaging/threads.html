@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Messagerie | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="card glow reveal">
+    <h1 style="margin:0"><i class="bi bi-chat-dots"></i> Messagerie</h1>
+    <p class="muted" style="margin-top:8px">Choisissez un administrateur ou ouvrez une conversation.</p>
+
+    <h3 style="margin:14px 0 8px">Administrateurs</h3>
+    <div class="chat-admins">
+      {% for a in admins %}
+        <a class="chat-admin" href="{% url 'msg_start' a.id %}">
+          <div class="chat-avatar">{{ a.username|slice:":1"|upper }}</div>
+          <div class="chat-admin-meta">
+            <div class="chat-admin-name">{{ a.username }}</div>
+            <div class="muted" style="font-size:12px">Support</div>
+          </div>
+          <div class="chat-admin-go"><i class="bi bi-chevron-right"></i></div>
+        </a>
+      {% empty %}
+        <div class="muted">Aucun admin disponible.</div>
+      {% endfor %}
+    </div>
+
+    <h3 style="margin:16px 0 8px">Mes conversations</h3>
+    {% if conversations %}
+      <div class="chat-threads">
+        {% for c in conversations %}
+          <a class="chat-thread" href="{% url 'msg_chat' c.id %}">
+            <div class="chat-avatar-wrap">
+              <div class="chat-avatar">{{ c.admin.username|slice:":1"|upper }}</div>
+              {% if c.unread_count %}
+                <div class="unread-badge">{{ c.unread_count }}</div>
+              {% endif %}
+            </div>
+
+            <div class="chat-thread-meta">
+              <div class="chat-thread-title">{{ c.admin.username }}</div>
+              <div class="chat-thread-preview muted">{{ c.last_message_preview|default:"Démarrer la conversation..." }}</div>
+            </div>
+
+            <div class="chat-thread-time muted" style="font-size:12px;text-align:right">
+              {% if c.last_message_at %}{{ c.last_message_at }}{% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="muted">Aucune conversation.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

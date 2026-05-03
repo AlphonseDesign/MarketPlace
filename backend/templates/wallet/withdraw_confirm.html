@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Retrait envoyé | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="card glow reveal">
+    <h1 style="margin:0">Confirmation</h1>
+
+    <div class="note" style="margin-top:12px">
+      <p style="margin:0">
+        Félicitations <b>{{ full_name }}</b>, votre retrait a été effectué.
+        Vous allez recevoir <b style="font-size:22px">{{ w.amount|floatformat:0 }} FC</b>
+        au <b>{{ w.payout_account }}</b> dans moins de <b>24h</b>.
+      </p>
+
+      <p class="muted" style="margin:8px 0 0;font-size:12px">
+        Mode : <b>{{ w.get_payout_method_display }}</b> — Référence : <b>{{ w.reference }}</b>
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="note" style="margin-top:0">
+        Pour plus d'information, veuillez contacter l'entreprise.
+      </div>
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn" href="{% url 'user_dashboard' %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+      <a class="btn btn-outline" href="{% url 'withdraw_request_create' %}">
+        <i class="bi bi-arrow-down-circle"></i> Nouveau retrait
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

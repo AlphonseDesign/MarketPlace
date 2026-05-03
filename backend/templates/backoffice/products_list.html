@@ -1,0 +1,35 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Produits | Gestion{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:end">
+  <div>
+    <h1 style="margin:0">Produits</h1>
+    <p class="muted" style="margin:8px 0 0">Créer / modifier les produits affichés sur le site.</p>
+  </div>
+  <a class="btn" href="{% url 'bo_product_create' %}"><i class="bi bi-plus-circle"></i> Nouveau</a>
+</div>
+
+<div class="card" style="margin-top:12px">
+  {% if products %}
+    <div class="list">
+      {% for p in products %}
+        <div class="list-item">
+          <div class="li-top">
+            <div class="li-title">{{ p.name }}</div>
+            <div class="li-badge">{% if p.is_active %}Actif{% else %}Inactif{% endif %}</div>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:6px">
+            Minimum: {{ p.min_investment_cdf|floatformat:0 }} FC — Durée: {{ p.duration_days }} jours — Note: {{ p.get_note_display }}
+          </div>
+          <div style="margin-top:10px">
+            <a class="btn btn-outline" href="{% url 'bo_product_edit' p.pk %}"><i class="bi bi-pencil"></i> Modifier</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Aucun produit.</p>
+  {% endif %}
+</div>
+{% endblock %}

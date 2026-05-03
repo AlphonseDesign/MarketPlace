@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Chat | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="chat-shell reveal" data-chat
+         data-conv-id="{{ conv.id }}"
+         data-poll-url="{% url 'msg_api_poll' conv.id %}"
+         data-send-url="{% url 'msg_api_send' conv.id %}">
+
+  <div class="chat-head card glow">
+    <div class="chat-head-left">
+      <div class="chat-avatar">{{ conv.admin.username|slice:":1"|upper }}</div>
+      <div>
+        <div style="font-weight:1100">{{ conv.admin.username }}</div>
+        <div class="muted" style="font-size:12px">Administrateur</div>
+      </div>
+    </div>
+    <a class="btn btn-outline" href="{% url 'msg_threads' %}">
+      <i class="bi bi-arrow-left"></i> Retour
+    </a>
+  </div>
+
+  <div class="chat-body card" id="chatBody">
+    {% for m in chat_messages %}
+      {% if m.sender_id == request.user.id %}
+        <div class="bubble bubble-me">
+          <div class="bubble-text">{{ m.body }}</div>
+          <div class="bubble-time">{{ m.created_at }}</div>
+        </div>
+      {% else %}
+        <div class="bubble bubble-admin">
+          <div class="bubble-text">{{ m.body }}</div>
+          <div class="bubble-time">{{ m.created_at }}</div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <form class="chat-input card" id="chatForm">
+    {% csrf_token %}
+    <input type="text" name="body" id="chatText" placeholder="Écrire un message..." maxlength="2000" autocomplete="off" required>
+    <button class="btn" type="submit"><i class="bi bi-send"></i> Envoyer</button>
+  </form>
+</section>
+
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

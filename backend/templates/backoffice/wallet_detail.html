@@ -1,0 +1,42 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Wallet | Gestion{% endblock %}
+
+{% block content %}
+<h1 style="margin:0 0 10px">Wallet — {{ wallet.user.username }}</h1>
+
+<div class="grid-2">
+  <div class="card">
+    <h3 style="margin:0">Solde</h3>
+    <div style="font-size:28px;font-weight:1100;margin-top:10px">{{ wallet.balance|floatformat:0 }} FC</div>
+    <p class="muted" style="font-size:12px;margin-top:8px">Traçable via les transactions.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0">Dernières transactions</h3>
+    {% if transactions %}
+      <div class="list">
+        {% for t in transactions %}
+          <div class="list-item">
+            <div class="li-top">
+              <div class="li-title">{{ t.get_tx_type_display }}</div>
+              <div class="li-badge">{{ t.amount|floatformat:0 }} FC</div>
+            </div>
+            <div class="muted" style="font-size:12px;margin-top:6px">
+              Solde après: {{ t.balance_after|floatformat:0 }} FC — {{ t.created_at }}
+            </div>
+            {% if t.note %}
+              <div class="muted" style="font-size:12px;margin-top:4px">{{ t.note }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted" style="margin-top:10px">Aucune transaction.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div style="margin-top:12px">
+  <a class="btn btn-outline" href="{% url 'bo_wallets_list' %}">Retour</a>
+</div>
+{% endblock %}

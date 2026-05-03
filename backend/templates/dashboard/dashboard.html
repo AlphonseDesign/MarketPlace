@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | InvestMarket{% endblock %}
+
+{% block content %}
+<section class="dash">
+  <div class="card glow reveal">
+    <div class="dash-head">
+      <div>
+        <h1 style="margin:0">Dashboard</h1>
+        <p class="muted" style="margin:8px 0 0">
+          Dépôts et retraits changent après validation admin.
+        </p>
+      </div>
+      <div class="dash-actions">
+        <a class="btn btn-soft" href="{% url 'deposit_request_create' %}">
+          <i class="bi bi-plus-circle"></i> Déposer
+        </a>
+        <a class="btn btn-outline" href="{% url 'withdraw_request_create' %}">
+          <i class="bi bi-arrow-down-circle"></i> Retirer
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card stat reveal">
+      <div class="stat-label"><i class="bi bi-wallet2"></i> Solde</div>
+      <div class="stat-value">{{ wallet.balance|floatformat:0 }} FC</div>
+      <div class="stat-sub">Wallet traçable</div>
+    </div>
+
+    <div class="card stat reveal">
+      <div class="stat-label"><i class="bi bi-clock-history"></i> Dépôts en attente</div>
+      <div class="stat-value">{{ pending_deposits }}</div>
+      <div class="stat-sub">Validation admin</div>
+    </div>
+
+    <div class="card stat reveal">
+      <div class="stat-label"><i class="bi bi-clock"></i> Retraits en attente</div>
+      <div class="stat-value">{{ pending_withdrawals }}</div>
+      <div class="stat-sub">Validation admin</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <h3 style="margin:0">Mes investissements</h3>
+      <p class="muted" style="margin:8px 0 0;font-size:12px">
+        Les compteurs ci-dessous sont en temps réel (selon l’horloge du téléphone/PC).
+      </p>
+
+      {% if investments %}
+        <div class="list">
+          {% for inv in investments %}
+            {% with end_at=inv.get_expected_end_at %}
+            <div class="list-item inv-card reveal"
+                 data-start="{{ inv.created_at|date:'c' }}"
+                 data-end="{% if end_at %}{{ end_at|date:'c' }}{% endif %}">
+
+              <div class="li-top">
+                <div class="li-title">{{ inv.product.name }}</div>
+                <div class="li-badge">{{ inv.get_status_display }}</div>
+              </div>
+
+              <!-- Gain / perte en gros -->
+              <div class="inv-hero">
+                <div class="inv-hero-left">
+                  <div class="muted" style="font-size:12px">Gain </div>
+                  <div class="money-big {% if inv.pnl_cdf >= 0 %}money-pos{% else %}money-neg{% endif %}">
+                    {{ inv.pnl_cdf|floatformat:0 }} FC
+                  </div>
+                </div>
+
+                <div class="inv-hero-right">
+                  <div class="muted" style="font-size:12px">Valeur estimée actuelle</div>
+                  <div class="money-mid">{{ inv.current_value_cdf|floatformat:0 }} FC</div>
+                </div>
+              </div>
+
+              <div class="li-grid">
+                <div>
+                  <div class="meta-label"><i class="bi bi-coin"></i> Principal</div>
+                  <div class="meta-value">{{ inv.principal_cdf|floatformat:0 }} FC</div>
+                </div>
+                <div>
+                  <div class="meta-label"><i class="bi bi-calendar-event"></i> Début</div>
+                  <div class="meta-value">{{ inv.created_at }}</div>
+                </div>
+                <div>
+                  <div class="meta-label"><i class="bi bi-calendar-check"></i> Fin estimée</div>
+                  <div class="meta-value">
+                    {% if end_at %}{{ end_at }}{% else %}—{% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Progress -->
+              <div class="inv-progress">
+                <div class="progress">
+                  <span class="bar" style="width:0%"></span>
+                </div>
+                <div class="progress-meta">
+                  <div><span class="muted">Écoulé :</span> <span class="elapsed">—</span></div>
+                  <div><span class="muted">Restant :</span> <span class="remaining">—</span></div>
+                  <div><span class="muted">%</span> <span class="percent">0</span></div>
+                </div>
+              </div>
+
+            </div>
+            {% endwith %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted" style="margin-top:10px">Aucun investissement.</p>
+      {% endif %}
+    </div>
+
+    <div class="card reveal">
+      <h3 style="margin:0">Demandes de dépôt</h3>
+      {% if deposits %}
+        <div class="list">
+          {% for d in deposits %}
+            <div class="list-item">
+              <div class="li-top">
+                <div class="li-title">{{ d.amount|floatformat:0 }} FC</div>
+                <div class="li-badge pill-{{ d.status|lower }}">{{ d.get_status_display }}</div>
+              </div>
+              <div class="muted" style="font-size:12px;margin-top:6px">{{ d.created_at }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted" style="margin-top:10px">Aucune demande.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:12px">
+    <div class="card reveal">
+      <h3 style="margin:0">Demandes de retrait</h3>
+      {% if withdrawals %}
+        <div class="list">
+          {% for w in withdrawals %}
+            <div class="list-item">
+              <div class="li-top">
+                <div class="li-title">{{ w.amount|floatformat:0 }} FC</div>
+                <div class="li-badge pill-{{ w.status|lower }}">{{ w.get_status_display }}</div>
+              </div>
+              <div class="muted" style="font-size:12px;margin-top:6px">{{ w.created_at }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted" style="margin-top:10px">Aucune demande.</p>
+      {% endif %}
+    </div>
+
+    <div class="card reveal">
+      <h3 style="margin:0">Transactions (ledger)</h3>
+      {% if transactions %}
+        <div class="list">
+          {% for t in transactions %}
+            <div class="list-item">
+              <div class="li-top">
+                <div class="li-title">{{ t.get_tx_type_display }}</div>
+                <div class="li-badge">{{ t.amount|floatformat:0 }} FC</div>
+              </div>
+              <div class="muted" style="font-size:12px;margin-top:6px">
+                Solde après: {{ t.balance_after|floatformat:0 }} FC — {{ t.created_at }}
+              </div>
+              {% if t.note %}
+                <div class="muted" style="font-size:12px;margin-top:4px">{{ t.note }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted" style="margin-top:10px">Aucune transaction.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

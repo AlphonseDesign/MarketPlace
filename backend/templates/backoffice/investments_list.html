@@ -1,0 +1,33 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Investissements | Gestion{% endblock %}
+
+{% block content %}
+<h1 style="margin:0 0 10px">Investissements</h1>
+
+<div class="card">
+  {% if investments %}
+    <div class="list">
+      {% for inv in investments %}
+        <div class="list-item">
+          <div class="li-top">
+            <div class="li-title">{{ inv.user.username }} — {{ inv.product.name }}</div>
+            <div class="li-badge">{{ inv.get_status_display }}</div>
+          </div>
+
+          <div class="muted" style="font-size:12px;margin-top:6px">
+            Principal: {{ inv.principal_cdf|floatformat:0 }} FC — Début: {{ inv.created_at }}
+          </div>
+
+          {% if inv.credited_at %}
+            <div class="muted" style="font-size:12px;margin-top:6px">
+              Crédité le: {{ inv.credited_at }} — Montant: {{ inv.payout_amount_cdf|floatformat:0 }} FC — Facteur: {{ inv.payout_factor_snapshot }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Aucun investissement.</p>
+  {% endif %}
+</div>
+{% endblock %}
